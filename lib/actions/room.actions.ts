@@ -66,13 +66,99 @@ export const updateDocument = async (roomId: string, title: string) => {
   }
 }
 
-export const getDocuments = async (email: string ) => {
+export const getDocuments = async (email: string, options?: {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: string;
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}) => {
+  const {
+    page = 1,
+    limit = 10,
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
+    search = '',
+    dateFrom = '',
+    dateTo = ''
+  } = options || {};
+
   try {
-      const rooms = await liveblocks.getRooms({ userId: email });
-    
-      return parseStringify(rooms);
+    const rooms = await liveblocks.getRooms({
+      userId: email,
+      limit: 100, // Get more to filter client-side
+    });
+
+    let filteredRooms = rooms.data;
+
+    // Filter by search term
+    if (search) {
+      filteredRooms = filteredRooms.filter(room => 
+        room.metadata.title?.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Filter by date range
+    if (dateFrom) {
+      const fromDate = new Date(dateFrom);
+      filteredRooms = filteredRooms.filter(room => 
+        new Date(room.createdAt) >= fromDate
+      );
+    }
+
+    if (dateTo) {
+      const toDate = new Date(dateTo);
+      toDate.setHours(23, 59, 59, 999); // End of day
+      filteredRooms = filteredRooms.filter(room => 
+        new Date(room.createdAt) <= toDate
+      );
+    }
+
+    // Sort
+    filteredRooms.sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortBy) {
+        case 'title':
+          aValue = a.metadata.title || '';
+          bValue = b.metadata.title || '';
+          break;
+        case 'createdAt':
+        default:
+          aValue = new Date(a.createdAt).getTime();
+          bValue = new Date(b.createdAt).getTime();
+          break;
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    // Pagination
+    const totalCount = filteredRooms.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedRooms = filteredRooms.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedRooms,
+      totalCount,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit)
+    };
   } catch (error) {
-    console.log(`Error happened while getting rooms: ${error}`);
+    console.error("Error fetching documents:", error);
+    return {
+      data: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 1
+    };
   }
 }
 
