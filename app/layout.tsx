@@ -9,7 +9,7 @@ import Provider from "./Provider";
 // Fallback font configuration
 const fontSans = {
   variable: "--font-sans",
-  className: "font-sans-fallback"
+  className: "font-sans-fallback",
 };
 
 export const metadata: Metadata = {

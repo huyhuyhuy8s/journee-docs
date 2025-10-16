@@ -75,6 +75,9 @@ declare type AddDocumentBtnProps = {
   email: string;
 };
 
-declare type DeleteModalProps = { roomId: string };
+declare type DeleteModalProps = {
+  roomId: string;
+  onDelete?: (roomId: string) => void;
+};
 
 declare type ThreadWrapperProps = { thread: ThreadData<BaseMetadata> };

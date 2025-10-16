@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { deleteDocument } from "@/lib/actions/room.actions";
+import { useDocumentApi } from "@/lib/api";
 
 import {
   Dialog,
@@ -18,9 +19,11 @@ import {
 
 import { Button } from "./ui/button";
 
-export const DeleteModal = ({ roomId }: DeleteModalProps) => {
+export const DeleteModal = ({ roomId, onDelete }: DeleteModalProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { deleteDocument } = useDocumentApi();
+  const router = useRouter();
 
   const deleteDocumentHandler = async () => {
     setLoading(true);
@@ -28,6 +31,14 @@ export const DeleteModal = ({ roomId }: DeleteModalProps) => {
     try {
       await deleteDocument(roomId);
       setOpen(false);
+
+      // Call the onDelete callback to refresh the parent list
+      if (onDelete) {
+        onDelete(roomId);
+      } else {
+        // Fallback to redirect if no callback provided
+        router.push("/");
+      }
     } catch (error) {
       console.log("Error notif:", error);
     }
