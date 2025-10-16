@@ -6,7 +6,9 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'img.clerk.com' }]
-  }
+  },
+  // Add font optimization settings
+  optimizeFonts: process.env.NODE_ENV !== 'development',
 };
 
 export default withSentryConfig(nextConfig, {

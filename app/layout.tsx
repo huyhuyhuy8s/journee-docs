@@ -1,5 +1,4 @@
-import { Inter as FontSans } from "next/font/google";
-
+// Alternative approach - use system fonts if Google Fonts fails
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import { Metadata } from "next";
@@ -7,10 +6,11 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Provider from "./Provider";
 
-const fontSans = FontSans({
-  subsets: ["latin"],
+// Fallback font configuration
+const fontSans = {
   variable: "--font-sans",
-});
+  className: "font-sans-fallback"
+};
 
 export const metadata: Metadata = {
   title: "LiveDocs",
