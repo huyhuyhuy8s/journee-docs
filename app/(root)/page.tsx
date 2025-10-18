@@ -96,9 +96,9 @@ const Home = () => {
           dateTo,
         });
 
-        console.log("📄 Frontend: Raw documents response:", documents);
-        console.log("📄 Frontend: Documents data:", documents?.data);
-        console.log("📄 Frontend: Documents count:", documents?.totalCount);
+        // console.log("📄 Frontend: Raw documents response:", documents);
+        // console.log("📄 Frontend: Documents data:", documents?.data);
+        // console.log("📄 Frontend: Documents count:", documents?.totalCount);
 
         setRoomDocuments(documents);
       } catch (err) {
